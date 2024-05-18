@@ -91,34 +91,36 @@ public class YeGPT {
     }
 
     public int[] encode() throws IOException {
-        if (this.fileContent == null) {
-            throw new IOException("Data is null");
-        } else if (this.encodedContent != null) {
+        if (this.encodedContent != null) {
             return this.encodedContent;
-        }
-        int[] a = new int[this.fileContent.length()];
-        for (int i = 0; i < this.fileContent.length(); i++) {
-            System.out.println(this.fileContent.charAt(i));
-            if (this.fileContent.charAt(i) == '\n') {
-                continue;
+        } else if (this.fileContent == null) {
+            throw new IOException("Data is null");
+        } else {
+            int[] a = new int[this.fileContent.length()];
+            for (int i = 0; i < this.fileContent.length(); i++) {
+                System.out.println(this.fileContent.charAt(i));
+                if (this.fileContent.charAt(i) == '\n') {
+                    continue;
+                }
+                a[i] = this.charMap.get(this.fileContent.charAt(i));
             }
-            a[i] = this.charMap.get(this.fileContent.charAt(i));
+            this.encodedContent = a;
         }
-        this.encodedContent = a;
         return this.encodedContent;
     }
 
     public String decode() throws IOException {
-        if (this.encodedContent == null) {
-            throw new IOException("Encoded data is null");
-        } else if (this.decodedContent != null) {
+        if (this.decodedContent != null) {
             return this.decodedContent;
+        } else if (this.encodedContent == null) {
+            throw new IOException("Encoded data is null");
+        } else {
+            StringBuilder str = new StringBuilder();
+            for (int i : this.encodedContent) {
+                str.append(intMap.get(i));
+            }
+            this.decodedContent = str.toString();
         }
-        StringBuilder str = new StringBuilder();
-        for (int i : this.encodedContent) {
-            str.append(intMap.get(i));
-        }
-        this.decodedContent = str.toString();
         return this.decodedContent;
     }
 

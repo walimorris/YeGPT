@@ -25,9 +25,6 @@ public class YeGPT {
     public void train() {
         buildFileContent();
         buildUniqueCharacters();
-        System.out.println(this.uniqueCharacters);
-        System.out.println(charMap);
-        System.out.println(intMap);
     }
 
     public String getFileContent() {

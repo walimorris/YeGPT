@@ -94,14 +94,8 @@ public class YeGPT {
         // requires a language set with more than 10000 characters
         if (this.fileContent.length() > 10000) {
             Set<Character> set = new HashSet<>();
-            StringTokenizer t = new StringTokenizer(this.fileContent, "\n");
-
-            Iterator<Object> it = t.asIterator();
-            while (it.hasNext()) {
-                String token = (String) it.next();
-                for (char c : token.toCharArray()) {
-                    set.add(c);
-                }
+            for (char c : this.fileContent.toCharArray()) {
+                set.add(c);
             }
             StringBuilder uniq = new StringBuilder();
             for (Character c : set) {

@@ -22,32 +22,73 @@ public class YeGPT {
         this.file = new File(file);
     }
 
+    public String getFileContent() {
+        return this.fileContent;
+    }
+
+    public String getUniqueCharacters() {
+        return this.uniqueCharacters;
+    }
+
     public void train() {
         buildFileContent();
         buildUniqueCharacters();
     }
 
-    public String getFileContent() {
-        return this.fileContent;
+    public int[] encode() throws IOException {
+        if (this.encodedContent != null) {
+            return this.encodedContent;
+        }
+        if (this.fileContent == null) {
+            throw new IOException("Data is null");
+        }
+        int[] a = new int[this.fileContent.length()];
+        for (int i = 0; i < this.fileContent.length(); i++) {
+            System.out.println(this.fileContent.charAt(i));
+            if (this.fileContent.charAt(i) == '\n') {
+                continue;
+            }
+            a[i] = this.charMap.get(this.fileContent.charAt(i));
+        }
+        this.encodedContent = a;
+        return this.encodedContent;
+    }
+
+    public String decode() throws IOException {
+        if (this.decodedContent != null) {
+            return this.decodedContent;
+        }
+        if (this.encodedContent == null) {
+            throw new IOException("Encoded data is null");
+        }
+        StringBuilder str = new StringBuilder();
+        for (int i : this.encodedContent) {
+            str.append(intMap.get(i));
+        }
+        this.decodedContent = str.toString();
+        return this.decodedContent;
+    }
+
+    private boolean isPureAscii(Character c) {
+        return StandardCharsets.US_ASCII.newEncoder().canEncode(c);
+    }
+
+    private boolean isSpecial(Character c) {
+        return SPECIAL.contains(String.valueOf(c));
     }
 
     private void buildFileContent() {
-        if (this.file.canRead()) {
-            StringBuilder tcb = new StringBuilder();
-            BufferedReader buf;
-
-            try {
-                String cur;
-                buf = new BufferedReader(new FileReader(this.file));
-                while((cur = buf.readLine()) != null) {
-                    tcb.append(cur).append("\n");
-                }
-            } catch (IOException e) {
-                System.out.println("Error reading file: " + e.getMessage());
+        StringBuilder tcb = new StringBuilder();
+        try (BufferedReader buf = new BufferedReader(new FileReader(this.file))) {
+            String cur;
+            while((cur = buf.readLine()) != null) {
+                tcb.append(cur).append("\n");
             }
-            if (!tcb.isEmpty()) {
-                this.fileContent = tcb.toString();
-            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+        if (!tcb.isEmpty()) {
+            this.fileContent = tcb.toString();
         }
     }
 
@@ -88,47 +129,5 @@ public class YeGPT {
             this.charMap = s;
             this.intMap = i;
         }
-    }
-
-    public int[] encode() throws IOException {
-        if (this.encodedContent != null) {
-            return this.encodedContent;
-        } else if (this.fileContent == null) {
-            throw new IOException("Data is null");
-        } else {
-            int[] a = new int[this.fileContent.length()];
-            for (int i = 0; i < this.fileContent.length(); i++) {
-                System.out.println(this.fileContent.charAt(i));
-                if (this.fileContent.charAt(i) == '\n') {
-                    continue;
-                }
-                a[i] = this.charMap.get(this.fileContent.charAt(i));
-            }
-            this.encodedContent = a;
-        }
-        return this.encodedContent;
-    }
-
-    public String decode() throws IOException {
-        if (this.decodedContent != null) {
-            return this.decodedContent;
-        } else if (this.encodedContent == null) {
-            throw new IOException("Encoded data is null");
-        } else {
-            StringBuilder str = new StringBuilder();
-            for (int i : this.encodedContent) {
-                str.append(intMap.get(i));
-            }
-            this.decodedContent = str.toString();
-        }
-        return this.decodedContent;
-    }
-
-    private boolean isPureAscii(Character c) {
-        return StandardCharsets.US_ASCII.newEncoder().canEncode(c);
-    }
-
-    private boolean isSpecial(Character c) {
-        return SPECIAL.contains(String.valueOf(c));
     }
 }

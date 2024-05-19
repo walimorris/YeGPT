@@ -44,11 +44,9 @@ public class YeGPT {
         }
         int[] a = new int[this.fileContent.length()];
         for (int i = 0; i < this.fileContent.length(); i++) {
-            System.out.println(this.fileContent.charAt(i));
-            if (this.fileContent.charAt(i) == '\n') {
-                continue;
+            if (!(this.fileContent.charAt(i) == '\n')) {
+                a[i] = this.charMap.get(this.fileContent.charAt(i));
             }
-            a[i] = this.charMap.get(this.fileContent.charAt(i));
         }
         this.encodedContent = a;
         return this.encodedContent;

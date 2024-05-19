@@ -16,7 +16,21 @@ public class YeGPT {
     private int[] encodedContent;
     private String decodedContent;
 
-    private static final String SPECIAL = "–—‘’“”!\"#$&…'()*+,-./:;?[] ";
+    /*
+    These * SPECIAL values do not have an equivalent numeric value in ASCII charset.
+    Therefore, they need special handling and given their own interpretations
+    within the context of this language model.
+     */
+    private static final String SPECIAL = "–—‘’“”…' ";
+
+    /*
+    SV assigns unique values to characters outside the Standard ASCII charset in this language
+    model. These characters, typically lacking representation in the standard American ASCII
+    charset and often with Unicode values, are assigned values ranging from
+    128 + index (based on their position in the string SPECIAL). By ensuring values start from 128,
+     we avoid overlapping with the ASCII charset while providing unambiguous numeric values.
+     */
+    private static final int SV = 128;
 
     public YeGPT(String file) {
         this.file = new File(file);
@@ -102,17 +116,19 @@ public class YeGPT {
                 uniq.append(c);
             }
             this.uniqueCharacters = uniq.toString();
+            System.out.println(this.uniqueCharacters);
 
             // create mapping from characters to integers
             // upper case values are treated the same as their lowercase counterparts
             Map<Character, Integer> s = new HashMap<>();
             Map<Integer, Character> i = new HashMap<>();
             for (Character c : this.uniqueCharacters.toCharArray()) {
-                int nVal = Character.getNumericValue(c);
+                int nVal = (int) c;
+                System.out.println("char: " + c + " - value: " + (int) c);
                 if (isSpecial(c)) {
-                    int index = SPECIAL.indexOf(c) + 66;
-                    s.put(c, -1 + index);
-                    i.put(-1 + index, c);
+                    int index = SPECIAL.indexOf(c);
+                    s.put(c, SV + index);
+                    i.put(SV + index, c);
                 } else {
                     s.put(c, nVal);
                     i.put(nVal, c);
